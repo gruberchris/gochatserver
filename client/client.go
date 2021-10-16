@@ -7,11 +7,11 @@ import (
 )
 
 type Client struct {
-	Incoming chan string
-	Outgoing chan string
-	reader   *bufio.Reader
-	writer *bufio.Writer
-	Conn net.Conn
+	Incoming       chan string
+	Outgoing       chan string
+	reader         *bufio.Reader
+	writer         *bufio.Writer
+	Conn           net.Conn
 	onDisconnected func(client *Client)
 }
 
@@ -21,11 +21,10 @@ func (client *Client) Read() {
 
 		if err != nil {
 			if err := client.Conn.Close(); err != nil {
-				log.Println("Error while closing connection for client " + client.Conn.RemoteAddr().String() + ": ", err.Error())
+				log.Println("Error while closing connection for client", client.Conn.RemoteAddr().String(), ":", err.Error())
 			}
 
 			client.onDisconnected(client)
-
 			break
 		}
 
@@ -33,21 +32,21 @@ func (client *Client) Read() {
 	}
 }
 
-func(client *Client) Write() {
+func (client *Client) Write() {
 	for data := range client.Outgoing {
 		_, err := client.writer.WriteString(data)
 
 		if err != nil {
-			log.Println("Error while writing: ", err.Error())
+			log.Println("Error while writing:", err.Error())
 		}
 
 		if err := client.writer.Flush(); err != nil {
-			log.Println("Error while flushing: ", err.Error())
+			log.Println("Error while flushing:", err.Error())
 		}
 	}
 }
 
-func(client *Client) Listen() {
+func (client *Client) Listen() {
 	go client.Read()
 	go client.Write()
 }
@@ -57,11 +56,11 @@ func NewClient(connection net.Conn, onClientDisconnected func(client *Client)) *
 	reader := bufio.NewReader(connection)
 
 	client := &Client{
-		Incoming: make(chan string),
-		Outgoing: make(chan string),
-		reader:   reader,
-		writer:   writer,
-		Conn: connection,
+		Incoming:       make(chan string),
+		Outgoing:       make(chan string),
+		reader:         reader,
+		writer:         writer,
+		Conn:           connection,
 		onDisconnected: onClientDisconnected,
 	}
 

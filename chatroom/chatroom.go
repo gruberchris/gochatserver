@@ -18,7 +18,7 @@ func (chatRoom *ChatRoom) Broadcast(data string) {
 	connectionsCount := len(chatRoom.clients)
 
 	if connectionsCount > 0 {
-		fmt.Println("Broadcasting to", strconv.Itoa(len(chatRoom.clients)), "clients:", data)
+		fmt.Println("Broadcasting to", strconv.Itoa(connectionsCount), "clients:", data)
 
 		for _, c := range chatRoom.clients {
 			c.Outgoing <- data

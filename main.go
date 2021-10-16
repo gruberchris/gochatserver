@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gruberchris/gochatserver/chatroom"
+	"log"
 	"net"
-	"os"
 )
 
 func main() {
@@ -15,11 +15,10 @@ func main() {
 
 	chatRoom := chatroom.NewChatRoom()
 
-	listener, err := net.Listen("tcp", host + ":" + port)
+	listener, err := net.Listen("tcp", host+":"+port)
 
 	if err != nil {
-		fmt.Println("Error while listening for connections: ", err.Error())
-		os.Exit(1)
+		log.Fatal("Error while listening for connections:", err.Error())
 	}
 
 	defer func() {
@@ -28,17 +27,17 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Listening on " + host + ":" + port + "...")
+	fmt.Println("Listening on", host, ":", port, "...")
 
 	for {
 		conn, err := listener.Accept()
 
 		if err != nil {
-			fmt.Println("Error while accepting a TCP connection: ", err.Error())
+			fmt.Println("Error while accepting a TCP connection:", err.Error())
 			continue
 		}
 
-		fmt.Println("Accepted connection from remote client: " + conn.RemoteAddr().String())
+		fmt.Println("Accepted connection from remote client:", conn.RemoteAddr().String())
 
 		chatRoom.Joins <- conn
 	}

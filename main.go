@@ -8,14 +8,11 @@ import (
 )
 
 func main() {
-	const (
-		host = "localhost"
-		port = "5000"
-	)
+	const port = "5000"
 
 	chatRoom := chatroom.NewChatRoom()
 
-	listener, err := net.Listen("tcp", host+":"+port)
+	listener, err := net.Listen("tcp", ":"+port)
 
 	if err != nil {
 		log.Fatal("Error while listening for connections:", err.Error())
@@ -27,7 +24,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Listening on", host, ":", port, "...")
+	fmt.Println("Listening on", ":"+port, "...")
 
 	for {
 		conn, err := listener.Accept()

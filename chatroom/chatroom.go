@@ -30,6 +30,11 @@ func (chatRoom *ChatRoom) Join(connection net.Conn) {
 	c := chatclient.NewClient(connection, chatRoom.Remove)
 	chatRoom.clients = append(chatRoom.clients, c)
 
+	connectionMessage := fmt.Sprintf("%s joined", connection.RemoteAddr().String())
+	chatRoom.Broadcast(connectionMessage)
+
+	fmt.Println(len(chatRoom.clients), "clients connected.")
+
 	go func() {
 		for {
 			chatRoom.incoming <- <-c.Incoming

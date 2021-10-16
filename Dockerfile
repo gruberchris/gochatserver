@@ -1,13 +1,10 @@
-FROM golang:1.17-alpine
+FROM golang:1.17-alpine AS builder
+WORKDIR /go/src/app
+COPY . .
+RUN go build -o gochatserver .
 
-RUN mkdir /app
+FROM alpine
 WORKDIR /app
-
-RUN export GO111MODULE=on
-ADD . .
-
-RUN go build
-
+COPY --from=builder /go/src/app/ /app/
 EXPOSE 5000
-
-ENTRYPOINT ["/app/gochatserver"]
+ENTRYPOINT ["./gochatserver"]

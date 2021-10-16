@@ -2,13 +2,13 @@ package chatroom
 
 import (
 	"fmt"
-	"github.com/gruberchris/gochatserver/client"
+	"github.com/gruberchris/gochatserver/chatclient"
 	"net"
 	"strconv"
 )
 
 type ChatRoom struct {
-	clients  []*client.Client
+	clients  []*chatclient.ChatClient
 	Joins    chan net.Conn
 	incoming chan string
 	outgoing chan string
@@ -27,7 +27,7 @@ func (chatRoom *ChatRoom) Broadcast(data string) {
 }
 
 func (chatRoom *ChatRoom) Join(connection net.Conn) {
-	c := client.NewClient(connection, chatRoom.Remove)
+	c := chatclient.NewClient(connection, chatRoom.Remove)
 	chatRoom.clients = append(chatRoom.clients, c)
 
 	go func() {
@@ -50,8 +50,8 @@ func (chatRoom *ChatRoom) Listen() {
 	}()
 }
 
-func (chatRoom *ChatRoom) Remove(disconnectedClient *client.Client) {
-	newClients := make([]*client.Client, len(chatRoom.clients))
+func (chatRoom *ChatRoom) Remove(disconnectedClient *chatclient.ChatClient) {
+	newClients := make([]*chatclient.ChatClient, len(chatRoom.clients))
 	index := 0
 
 	for _, c := range chatRoom.clients {
@@ -61,10 +61,10 @@ func (chatRoom *ChatRoom) Remove(disconnectedClient *client.Client) {
 		}
 	}
 
-	// remove the client from the chat room
+	// remove the chatclient from the chat room
 	chatRoom.clients = newClients[:index]
 
-	// broadcast the client left to any remaining active clients
+	// broadcast the chatclient left to any remaining active clients
 	disconnectedMessage := fmt.Sprintf("%s left", disconnectedClient.Conn.RemoteAddr().String())
 	chatRoom.Broadcast(disconnectedMessage)
 
@@ -73,7 +73,7 @@ func (chatRoom *ChatRoom) Remove(disconnectedClient *client.Client) {
 
 func NewChatRoom() *ChatRoom {
 	chatRoom := &ChatRoom{
-		clients:  make([]*client.Client, 0),
+		clients:  make([]*chatclient.ChatClient, 0),
 		Joins:    make(chan net.Conn),
 		incoming: make(chan string),
 		outgoing: make(chan string),

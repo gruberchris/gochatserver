@@ -34,7 +34,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println("Accepted connection from remote client:", conn.RemoteAddr().String())
+		fmt.Println("Accepted connection from remote chatclient:", conn.RemoteAddr().String())
 
 		chatRoom.Joins <- conn
 	}
